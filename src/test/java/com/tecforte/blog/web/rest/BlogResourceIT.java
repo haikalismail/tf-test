@@ -2,7 +2,9 @@ package com.tecforte.blog.web.rest;
 
 import com.tecforte.blog.BlogApp;
 import com.tecforte.blog.domain.Blog;
+import com.tecforte.blog.domain.Entry;
 import com.tecforte.blog.repository.BlogRepository;
+import com.tecforte.blog.repository.EntryRepository;
 import com.tecforte.blog.service.BlogService;
 import com.tecforte.blog.service.dto.BlogDTO;
 import com.tecforte.blog.service.mapper.BlogMapper;
@@ -44,6 +46,9 @@ public class BlogResourceIT {
 
     @Autowired
     private BlogRepository blogRepository;
+    
+    @Autowired
+    private EntryRepository entryRepository;
 
     @Autowired
     private BlogMapper blogMapper;
@@ -69,6 +74,8 @@ public class BlogResourceIT {
     private MockMvc restBlogMockMvc;
 
     private Blog blog;
+    
+    private Entry entry;
 
     @BeforeEach
     public void setup() {

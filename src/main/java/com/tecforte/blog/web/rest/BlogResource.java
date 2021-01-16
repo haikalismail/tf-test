@@ -1,6 +1,7 @@
 package com.tecforte.blog.web.rest;
 
 import com.tecforte.blog.service.BlogService;
+import com.tecforte.blog.service.EntryService;
 import com.tecforte.blog.web.rest.errors.BadRequestAlertException;
 import com.tecforte.blog.service.dto.BlogDTO;
 
@@ -114,6 +115,20 @@ public class BlogResource {
     public ResponseEntity<Void> deleteBlog(@PathVariable Long id) {
         log.debug("REST request to delete Blog : {}", id);
         blogService.delete(id);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
+    }
+    
+    @DeleteMapping("/blogs/clean")
+    public ResponseEntity<Void> deleteBlogEntry(@RequestParam(value="keywords") List<String> keywords) {
+        log.debug("REST request to delete Blog Entry based on keyword : {}", keywords);
+        blogService.deleteBlogEntry(keywords);
+        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, keywords.toString())).build();
+    }
+    
+    @DeleteMapping("/blogs/{id}/clean")
+    public ResponseEntity<Void> deleteBlogIdEntry(@PathVariable Long id, @RequestParam(value="keywords") List<String> keywords) {
+        log.debug("REST request to delete Blog Entry based on id and keywords: {}", keywords);
+        blogService.deleteBlogIdEntry(id,keywords);
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
 }

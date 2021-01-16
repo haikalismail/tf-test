@@ -2,8 +2,11 @@ package com.tecforte.blog.service;
 
 import com.tecforte.blog.domain.Blog;
 import com.tecforte.blog.repository.BlogRepository;
+import com.tecforte.blog.repository.EntryRepository;
 import com.tecforte.blog.service.dto.BlogDTO;
+import com.tecforte.blog.service.dto.EntryDTO;
 import com.tecforte.blog.service.mapper.BlogMapper;
+import com.tecforte.blog.service.mapper.EntryMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Arrays;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -25,12 +29,18 @@ public class BlogService {
     private final Logger log = LoggerFactory.getLogger(BlogService.class);
 
     private final BlogRepository blogRepository;
+    
+    private final EntryRepository entryRepository;
 
     private final BlogMapper blogMapper;
+    
+    private final EntryMapper entryMapper;
 
-    public BlogService(BlogRepository blogRepository, BlogMapper blogMapper) {
+    public BlogService(BlogRepository blogRepository, BlogMapper blogMapper,EntryRepository entryRepository,EntryMapper entryMapper) {
         this.blogRepository = blogRepository;
         this.blogMapper = blogMapper;
+        this.entryRepository = entryRepository;
+        this.entryMapper = entryMapper;
     }
 
     /**
@@ -81,5 +91,44 @@ public class BlogService {
     public void delete(Long id) {
         log.debug("Request to delete Blog : {}", id);
         blogRepository.deleteById(id);
+    }
+    
+    public void deleteBlogEntry(List<String> keyword) {
+        log.debug("Request to delete Blog Entry based on keyword: {}", keyword);
+        
+        List<EntryDTO> entryDTO = entryRepository.findAll().stream()
+                .map(entryMapper::toDto)
+                .collect(Collectors.toCollection(LinkedList::new));
+        
+        for(EntryDTO entry:entryDTO){
+            List<String> splitContent = Arrays.asList(entry.getContent().split(" "));
+            for(int i=0; i < splitContent.size();i++){
+                if(keyword.contains(splitContent.get(i))){
+                    entryRepository.deleteById(entry.getId());
+                }
+            }
+        }
+    }
+    
+    public void deleteBlogIdEntry(Long id, List<String> keyword) {
+        log.debug("Request to delete Blog Entry based on id and keywords: {}", keyword);
+        
+        List<EntryDTO> entryDTO = entryRepository.findAll().stream()
+                .map(entryMapper::toDto)
+                .collect(Collectors.toCollection(LinkedList::new));
+        log.debug("keyword: {}", keyword);
+        for(EntryDTO entry:entryDTO){
+            if(entry.getBlogId().equals(id)){
+                List<String> splitContent = Arrays.asList(entry.getContent().split(" "));
+                for(int i=0; i < splitContent.size();i++){
+                    log.debug("splitContent1: {}", splitContent.get(i));
+                    log.debug("keyword: {}", keyword);
+                    log.debug("BOolean: {}", keyword.contains(splitContent.get(i)));
+                    if(keyword.contains(splitContent.get(i))){
+                        entryRepository.deleteById(entry.getId());
+                    }
+                }
+            }
+        }
     }
 }
