@@ -118,6 +118,11 @@ public class BlogResource {
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, id.toString())).build();
     }
     
+    /**
+     * {@code DELETE  /blogs/clean} : delete the blog entry by keyword.
+     *
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
     @DeleteMapping("/blogs/clean")
     public ResponseEntity<Void> deleteBlogEntry(@RequestParam(value="keywords") List<String> keywords) {
         log.debug("REST request to delete Blog Entry based on keyword : {}", keywords);
@@ -125,6 +130,11 @@ public class BlogResource {
         return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, false, ENTITY_NAME, keywords.toString())).build();
     }
     
+    /**
+     * {@code DELETE  /blogs/:id/clean} : delete the blog entry by keyword and blog id.
+     *
+     * @return the {@link ResponseEntity} with status {@code 204 (NO_CONTENT)}.
+     */
     @DeleteMapping("/blogs/{id}/clean")
     public ResponseEntity<Void> deleteBlogIdEntry(@PathVariable Long id, @RequestParam(value="keywords") List<String> keywords) {
         log.debug("REST request to delete Blog Entry based on id and keywords: {}", keywords);

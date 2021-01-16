@@ -93,6 +93,10 @@ public class BlogService {
         blogRepository.deleteById(id);
     }
     
+    /**
+     * Delete the blog entry by keyword.
+     *
+     */
     public void deleteBlogEntry(List<String> keyword) {
         log.debug("Request to delete Blog Entry based on keyword: {}", keyword);
         
@@ -110,20 +114,20 @@ public class BlogService {
         }
     }
     
+    /**
+     * Delete the blog entry by keyword and blog id.
+     *
+     */
     public void deleteBlogIdEntry(Long id, List<String> keyword) {
         log.debug("Request to delete Blog Entry based on id and keywords: {}", keyword);
         
         List<EntryDTO> entryDTO = entryRepository.findAll().stream()
                 .map(entryMapper::toDto)
                 .collect(Collectors.toCollection(LinkedList::new));
-        log.debug("keyword: {}", keyword);
         for(EntryDTO entry:entryDTO){
             if(entry.getBlogId().equals(id)){
                 List<String> splitContent = Arrays.asList(entry.getContent().split(" "));
                 for(int i=0; i < splitContent.size();i++){
-                    log.debug("splitContent1: {}", splitContent.get(i));
-                    log.debug("keyword: {}", keyword);
-                    log.debug("BOolean: {}", keyword.contains(splitContent.get(i)));
                     if(keyword.contains(splitContent.get(i))){
                         entryRepository.deleteById(entry.getId());
                     }

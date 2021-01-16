@@ -56,19 +56,21 @@ public class EntryService {
     public EntryDTO save(EntryDTO entryDTO) {
         log.debug("Request to save Entry : {}", entryDTO);
         
+        /** Create a list of to store the positive and negative emoji and keyword*/
         List<String> emojiPositive = Arrays.asList("LIKE","HAHA","WOW"),
                      emojiNegative = Arrays.asList("SAD","ANGRY","WOW"),
                      keywordPositive = Arrays.asList("like","love","happy","haha","laugh"),
                      keywordNegative = Arrays.asList("angry","sad","fear","cry","lonely");
         
+        /**Find Blog data to get the blog type is positive or negatif*/
         Optional<BlogDTO> blogDTO = blogService.findOne(entryDTO.getBlogId());
         Entry entry = entryMapper.toEntity(entryDTO);
         
         if(blogDTO.get().isPositive()){
-           entry = saveEntry("positive",entryDTO,emojiPositive,keywordPositive,keywordNegative,entry);
+           entry = saveEntry("positive",entryDTO,emojiPositive,keywordNegative,entry);
            
         } else {
-           entry = saveEntry("negative",entryDTO,emojiNegative,keywordPositive,keywordNegative,entry);
+           entry = saveEntry("negative",entryDTO,emojiNegative,keywordPositive,entry);
         }
         return entryMapper.toDto(entry);
     }
@@ -76,35 +78,18 @@ public class EntryService {
     public Entry saveEntry(String blogType,
                            EntryDTO entryDTO,
                            List<String> emoji, 
-                           List<String> keywordPositive, 
-                           List<String> keywordNegative, 
+                           List<String> keyword, 
                            Entry entry) {
         boolean emojiCheck = emoji.contains(entryDTO.getEmoji().toString()),
                 keywordCheck = false;
         List<String> splitContent = Arrays.asList(entryDTO.getContent().split(" "));
         
         for(int i=0; i < splitContent.size();i++){
-            log.debug("i : {}", i);
-            log.debug("splitContent : {}", splitContent);
-            if(blogType.equals("positive")){
-                if(keywordPositive.contains(splitContent.get(i).toLowerCase())){
-                    keywordCheck = true;
-                } else if (keywordNegative.contains(splitContent.get(i).toLowerCase())){
-                    log.debug("keyword : {}", splitContent.get(i).toLowerCase());
-                    keywordCheck = false;
-                    break;
-                } else {
-                    keywordCheck = true;
-                }
+            if (keyword.contains(splitContent.get(i).toLowerCase())){
+                keywordCheck = false;
+                break;
             } else {
-                if(keywordNegative.contains(splitContent.get(i).toLowerCase())){
-                    keywordCheck = true;
-                } else if (keywordPositive.contains(splitContent.get(i).toLowerCase())){
-                    keywordCheck = false;
-                    break;
-                } else {
-                    keywordCheck = true;
-                }
+                keywordCheck = true;
             }
         }
         
